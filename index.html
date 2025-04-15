@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Echuuca Documentation</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      font-family: 'Roboto', sans-serif;
+    }
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: #121212;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    .header h1 {
+      margin: 0;
+      font-weight: 500;
+      color: #fff;
+    }
+    .search {
+      margin-top: 10px;
+      max-width: 400px;
+    }
+    .search input {
+      width: 100%;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      background: #2a2a2a;
+      color: #fff;
+    }
+    .sidebar {
+      position: fixed;
+      top: 145px; /* header height + some gap */
+      left: 20px;
+      width: 220px;
+      height: calc(100vh - 120px);
+      background: #2b2b2b;
+      padding: 20px;
+      border-radius: 6px;
+      overflow-y: auto;
+      z-index: 999;
+    }
+    .sidebar h2 {
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    .sidebar a {
+      display: block;
+      padding: 10px;
+      margin-bottom: 8px;
+      text-decoration: none;
+      border-radius: 4px;
+      color: #ccc;
+      transition: background 0.3s, color 0.3s;
+    }
+    .sidebar a:hover {
+      background: #3a3a3a;
+      color: #fff;
+    }
+    .main-content {
+      position: fixed;
+      top: 140px; /* Adjust if needed */
+      left: 280px;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .section {
+      margin-top: -40px;
+      margin-bottom: 40px;
+    }
+    .section h2 {
+      border-bottom: 2px solid #3a3a3a;
+      padding-bottom: 5px;
+      scroll-margin-top: 0;       /* Ensure heading aligns exactly at the top */
+    }
+    .editor-container {
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      background: #252526;
+      overflow: hidden;
+      width: 97%;
+      margin-bottom: 10px;
+    }
+    p {
+      line-height: 1.6;
+    }
+  </style>
+  <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+  <script>
+    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor/min/vs' } });
+    require(['vs/editor/editor.main'], function() {
+      monaco.languages.register({ id: 'luau' });
+      monaco.languages.setMonarchTokensProvider('luau', {
+        tokenizer: {
+          root: [
+            [/\b(?:local|table)\b/, 'special-luau'],
+            [/\b(?:function|end|if|then|else|elseif|for|in|while|repeat|until|return|break|continue|do|not|and|or|true|false|nil|typeof|interface)\b/, 'keyword.luau'],
+            [/\b\d+(\.\d+)?\b/, 'number.luau'],
+            [/"([^"\\]|\\.)*"/, 'string.luau'],
+            [/'([^'\\]|\\.)*'/, 'string.luau'],
+            [/--.*$/, 'comment.luau'],
+            [/\b[a-zA-Z_][a-zA-Z0-9_]*\b/, 'identifier.luau'],
+            [/[(){}[\];,.]/, 'delimiter.luau'],
+            [/[+\-*\/=<>!]+/, 'operator.luau']
+          ]
+        }
+      });
+      monaco.editor.defineTheme('myLuauTheme', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+          { token: 'special-luau', foreground: '55aaff' },
+          { token: 'keyword.luau', foreground: 'ff5555' },
+          { token: 'number.luau', foreground: 'b8d7a3' },
+          { token: 'string.luau', foreground: 'd4a959' },
+          { token: 'comment.luau', foreground: '788798' },
+          { token: 'identifier.luau', foreground: 'e0e0e0' },
+          { token: 'delimiter.luau', foreground: 'e0e0e0' },
+          { token: 'operator.luau', foreground: 'e0e0e0' }
+        ],
+        colors: {}
+      });
+      function createLuauEditor(containerId, codeValue) {
+        var container = document.getElementById(containerId);
+        var editor = monaco.editor.create(container, {
+          value: codeValue,
+          language: 'luau',
+          theme: 'myLuauTheme',
+          readOnly: true,
+          lineNumbers: 'off',
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          automaticLayout: true
+        });
+        function updateEditorHeight() {
+          var contentHeight = editor.getContentHeight();
+          container.style.height = contentHeight + 'px';
+          editor.layout();
+        }
+        editor.onDidContentSizeChange(updateEditorHeight);
+        updateEditorHeight();
+        return editor;
+      }
+      createLuauEditor('editor1', 'table getgenv(<none>)');
+      createLuauEditor('editor2', 'table getrenv(<none>)');
+      createLuauEditor('editor3', 'table getrawmetatable(variant<Userdata, string, table> object)');
+      createLuauEditor('editor4', 'table getsenv(Object<LocalScript> script)');
+      createLuauEditor('editor5', 'table getmenv(Object<ModuleScript> script)');
+      createLuauEditor('editor6', 'table getscriptenvs(<none>)');
+    });
+  </script>
+</head>
+<body>
+  <div class="header">
+    <h1>Echuuca Documentation</h1>
+    <div class="search"><input type="text" placeholder="Search Documentation..."></div>
+  </div>
+  <div class="sidebar">
+    <h2>Contents</h2>
+    <a href="#getgenv">getgenv</a>
+    <a href="#getrenv">getrenv</a>
+    <a href="#getrawmetatable">getrawmetatable</a>
+    <a href="#getsenv">getsenv</a>
+    <a href="#getmenv">getmenv</a>
+    <a href="#getscriptenvs">getscriptenvs</a>
+  </div>
+  <div class="main-content">
+    <div class="section" id="getgenv">
+      <h2>getgenv</h2>
+      <div class="editor-container" id="editor1"></div>
+      <p>Returns the global environment table for ProtoSmasher.</p>
+    </div>
+    <div class="section" id="getrenv">
+      <h2>getrenv</h2>
+      <div class="editor-container" id="editor2"></div>
+      <p>Returns the table of all Roblox globals.</p>
+    </div>
+    <div class="section" id="getrawmetatable">
+      <h2>getrawmetatable</h2>
+      <div class="editor-container" id="editor3"></div>
+      <p>Returns the metatable of the passed object, ignoring __metatable metafield.</p>
+    </div>
+    <div class="section" id="getsenv">
+      <h2>getsenv</h2>
+      <div class="editor-container" id="editor4"></div>
+      <p>Returns the global environment of the given script.</p>
+    </div>
+    <div class="section" id="getmenv">
+      <h2>getmenv</h2>
+      <div class="editor-container" id="editor5"></div>
+      <p>Returns the global environment of the given ModuleScript.</p>
+    </div>
+    <div class="section" id="getscriptenvs">
+      <h2>getscriptenvs</h2>
+      <div class="editor-container" id="editor6"></div>
+      <p>Returns a table of all scripts and their global environments. (key = script, value = environment)</p>
+    </div>
+  </div>
+</body>
+</html>
