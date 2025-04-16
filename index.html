@@ -2,175 +2,161 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Echuuca Documentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echuuca Exploit Documentation</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/monaco-editor/min/vs/editor/editor.main.css">
   <style>
+    :root {
+      --bg-dark: #1d1d1d;
+      --bg-code: #2d2d2d;
+      --text-main: #e0e0e0;
+      --keyword-table: #55aaff;
+      --keyword-function: #ff5555;
+      --keyword-if: #ff5555;
+      --keyword-keyword: #ff8800;
+      --keyword-global: #ffcc00;
+      --keyword-type: #00ccff;
+      --keyword-operator: #ff5555;
+      --keyword-delimiter: #cccccc;
+      --keyword-number: #00ffcc;
+      --keyword-string: #00ff00;
+      --keyword-comment: #888888;
+      --border-color: #3a3a3a;
+      --sidebar-bg: #2b2b2b;
+      --header-bg: #121212;
+      --sidebar-width: 280px;
+      --header-height: 80px;
+    }
+    * { box-sizing: border-box; }
+    *::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
     html, body {
       margin: 0;
       padding: 0;
-      background-color: #1e1e1e;
-      color: #e0e0e0;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
       font-family: 'Roboto', sans-serif;
+      height: 100%;
+      overflow: hidden;
     }
     .header {
       position: fixed;
       top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background-color: var(--header-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
       z-index: 1000;
-      background: #121212;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
     .header h1 {
       margin: 0;
-      font-weight: 500;
-      color: #fff;
-    }
-    .search {
-      margin-top: 10px;
-      max-width: 400px;
-    }
-    .search input {
-      width: 100%;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 4px;
-      background: #2a2a2a;
+      font-size: 24px;
       color: #fff;
     }
     .sidebar {
       position: fixed;
-      top: 145px; /* header height + some gap */
-      left: 20px;
-      width: 220px;
-      height: calc(100vh - 120px);
-      background: #2b2b2b;
+      top: var(--header-height);
+      left: 0;
+      width: var(--sidebar-width);
+      bottom: 0;
+      background-color: var(--sidebar-bg);
       padding: 20px;
-      border-radius: 6px;
       overflow-y: auto;
-      z-index: 999;
+      border-right: 1px solid var(--border-color);
     }
     .sidebar h2 {
-      font-size: 18px;
+      padding: 0 0px;
       margin-top: 0;
-      margin-bottom: 15px;
+      font-size: 15px;
+      color: #888;
     }
     .sidebar a {
       display: block;
-      padding: 10px;
-      margin-bottom: 8px;
+      padding: 8px 10px;
+      margin: 8px 0;
       text-decoration: none;
-      border-radius: 4px;
       color: #ccc;
-      transition: background 0.3s, color 0.3s;
+      border-radius: 4px;
+      transition: 0.3s;
     }
-    .sidebar a:hover {
-      background: #3a3a3a;
+    .sidebar a:hover, .sidebar a.active {
+      background-color: var(--border-color);
       color: #fff;
     }
     .main-content {
       position: fixed;
-      top: 140px; /* Adjust if needed */
-      left: 280px;
+      top: var(--header-height);
+      left: var(--sidebar-width);
       right: 0;
       bottom: 0;
+      padding: 0 20px 20px 20px;
+      padding-bottom: 500px;
       overflow-y: auto;
-      padding: 20px;
     }
     .section {
-      margin-top: -40px;
       margin-bottom: 40px;
     }
     .section h2 {
-      border-bottom: 2px solid #3a3a3a;
-      padding-bottom: 5px;
-      scroll-margin-top: 0;       /* Ensure heading aligns exactly at the top */
+      position: relative;
+      font-size: 20px;
+      margin-bottom: 16px;
+      padding: 0 0;
+      margin-top: 0;
+      scroll-margin-top: 0;
     }
-    .editor-container {
-      border: 1px solid #3a3a3a;
+    .section h2::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .section::before {
+      content: "";
+      display: block;
+      height: 10px;
+      margin-top: 0px;
+    }
+    .code-box {
+      background-color: var(--bg-code);
+      border: 1px solid var(--border-color);
       border-radius: 6px;
-      background: #252526;
-      overflow: hidden;
-      width: 97%;
-      margin-bottom: 10px;
+      padding: 15px;
+      font-family: Consolas, "Courier New", monospace;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: auto;
+      color: var(--text-main);
+      display: block;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 16px;
+      vertical-align: baseline;
     }
-    p {
-      line-height: 1.6;
-    }
+    .code-box .token-table { color: var(--keyword-table); }
+    .code-box .token-function { color: var(--keyword-function); }
+    .code-box .token-if { color: var(--keyword-if); }
+    .code-box .token-keyword { color: var(--keyword-keyword); }
+    .code-box .token-global { color: var(--keyword-global); }
+    .code-box .token-type { color: var(--keyword-type); }
+    .code-box .token-operator { color: var(--keyword-operator); }
+    .code-box .token-delimiter { color: var(--keyword-delimiter); }
+    .code-box .token-number { color: var(--keyword-number); }
+    .code-box .token-string { color: var(--keyword-string); }
+    .code-box .token-comment { color: var(--keyword-comment); }
   </style>
-  <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
-  <script>
-    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor/min/vs' } });
-    require(['vs/editor/editor.main'], function() {
-      monaco.languages.register({ id: 'luau' });
-      monaco.languages.setMonarchTokensProvider('luau', {
-        tokenizer: {
-          root: [
-            [/\b(?:local|table)\b/, 'special-luau'],
-            [/\b(?:function|end|if|then|else|elseif|for|in|while|repeat|until|return|break|continue|do|not|and|or|true|false|nil|typeof|interface)\b/, 'keyword.luau'],
-            [/\b\d+(\.\d+)?\b/, 'number.luau'],
-            [/"([^"\\]|\\.)*"/, 'string.luau'],
-            [/'([^'\\]|\\.)*'/, 'string.luau'],
-            [/--.*$/, 'comment.luau'],
-            [/\b[a-zA-Z_][a-zA-Z0-9_]*\b/, 'identifier.luau'],
-            [/[(){}[\];,.]/, 'delimiter.luau'],
-            [/[+\-*\/=<>!]+/, 'operator.luau']
-          ]
-        }
-      });
-      monaco.editor.defineTheme('myLuauTheme', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [
-          { token: 'special-luau', foreground: '55aaff' },
-          { token: 'keyword.luau', foreground: 'ff5555' },
-          { token: 'number.luau', foreground: 'b8d7a3' },
-          { token: 'string.luau', foreground: 'd4a959' },
-          { token: 'comment.luau', foreground: '788798' },
-          { token: 'identifier.luau', foreground: 'e0e0e0' },
-          { token: 'delimiter.luau', foreground: 'e0e0e0' },
-          { token: 'operator.luau', foreground: 'e0e0e0' }
-        ],
-        colors: {}
-      });
-      function createLuauEditor(containerId, codeValue) {
-        var container = document.getElementById(containerId);
-        var editor = monaco.editor.create(container, {
-          value: codeValue,
-          language: 'luau',
-          theme: 'myLuauTheme',
-          readOnly: true,
-          lineNumbers: 'off',
-          minimap: { enabled: false },
-          scrollBeyondLastLine: false,
-          automaticLayout: true
-        });
-        function updateEditorHeight() {
-          var contentHeight = editor.getContentHeight();
-          container.style.height = contentHeight + 'px';
-          editor.layout();
-        }
-        editor.onDidContentSizeChange(updateEditorHeight);
-        updateEditorHeight();
-        return editor;
-      }
-      createLuauEditor('editor1', 'table getgenv(<none>)');
-      createLuauEditor('editor2', 'table getrenv(<none>)');
-      createLuauEditor('editor3', 'table getrawmetatable(variant<Userdata, string, table> object)');
-      createLuauEditor('editor4', 'table getsenv(Object<LocalScript> script)');
-      createLuauEditor('editor5', 'table getmenv(Object<ModuleScript> script)');
-      createLuauEditor('editor6', 'table getscriptenvs(<none>)');
-    });
-  </script>
 </head>
 <body>
   <div class="header">
-    <h1>Echuuca Documentation</h1>
-    <div class="search"><input type="text" placeholder="Search Documentation..."></div>
+    <h1>Echuuca Exploit Documentation</h1>
   </div>
   <div class="sidebar">
-    <h2>Contents</h2>
+    <h2>ENVIRONMENT</h2>
     <a href="#getgenv">getgenv</a>
     <a href="#getrenv">getrenv</a>
     <a href="#getrawmetatable">getrawmetatable</a>
@@ -178,37 +164,47 @@
     <a href="#getmenv">getmenv</a>
     <a href="#getscriptenvs">getscriptenvs</a>
   </div>
-  <div class="main-content">
-    <div class="section" id="getgenv">
-      <h2>getgenv</h2>
-      <div class="editor-container" id="editor1"></div>
-      <p>Returns the global environment table for ProtoSmasher.</p>
-    </div>
-    <div class="section" id="getrenv">
-      <h2>getrenv</h2>
-      <div class="editor-container" id="editor2"></div>
-      <p>Returns the table of all Roblox globals.</p>
-    </div>
-    <div class="section" id="getrawmetatable">
-      <h2>getrawmetatable</h2>
-      <div class="editor-container" id="editor3"></div>
-      <p>Returns the metatable of the passed object, ignoring __metatable metafield.</p>
-    </div>
-    <div class="section" id="getsenv">
-      <h2>getsenv</h2>
-      <div class="editor-container" id="editor4"></div>
-      <p>Returns the global environment of the given script.</p>
-    </div>
-    <div class="section" id="getmenv">
-      <h2>getmenv</h2>
-      <div class="editor-container" id="editor5"></div>
-      <p>Returns the global environment of the given ModuleScript.</p>
-    </div>
-    <div class="section" id="getscriptenvs">
-      <h2>getscriptenvs</h2>
-      <div class="editor-container" id="editor6"></div>
-      <p>Returns a table of all scripts and their global environments. (key = script, value = environment)</p>
-    </div>
+<div class="main-content">
+  <div class="section" id="getgenv">
+    <h2>getgenv</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">getgenv</span>(<span class="token-delimiter">&lt;none&gt;</span>)</div>
+    <p>Returns the global environment table for Echuuca, which is shared across all scripts in the same exploit session. This allows for the storage and access of functions and variables globally, facilitating communication between scripts.</p>
   </div>
+  <div class="section" id="getrenv">
+    <h2>getrenv</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">getrenv</span>(<span class="token-delimiter">&lt;none&gt;</span>)</div>
+    <p>Returns the table of all Roblox global variables, providing access to the global scope. This function allows interaction with Roblox's built-in functions and properties, enabling script-level access to global data.</p>
+  </div>
+  <div class="section" id="getsenv">
+    <h2>getsenv</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">getsenv</span>(<span class="token-type">Object</span>&lt;<span class="token-type">LocalScript</span>&gt; <span class="token-global">script</span>)</div>
+    <p>Returns the global environment of the specified LocalScript, allowing access to its environment. This function is useful for modifying the script's global state and managing script-specific variables effectively.</p>
+  </div>
+  <div class="section" id="getmenv">
+    <h2>getmenv</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">getmenv</span>(<span class="token-type">Object</span>&lt;<span class="token-type">ModuleScript</span>&gt; <span class="token-global">script</span>)</div>
+    <p>Returns the global environment of the specified ModuleScript, similar to <span style="font-size: 1.2em;"><code>require</code></span>. This function allows for the management of module-specific global state, enabling better organization of module data.</p>
+  </div>
+  <div class="section" id="gettenv">
+    <h2>gettenv</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">gettenv</span>(<span class="token-type">thread</span> <span class="token-global">thread</span>)</div>
+    <p>Returns the environment table of the specified thread, allowing access to its state. This function is useful for managing thread-specific variables and ensuring proper isolation of thread data.</p>
+  </div>
+  <div class="section" id="getfenv">
+    <h2>getfenv</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">getfenv</span>(<span class="token-delimiter">&lt;none&gt;</span>)</div>
+    <p>Returns the environment of the current function or the specified function. This is useful for accessing local variables and functions defined in that environment, facilitating scope management.</p>
+  </div>
+  <div class="section" id="setfenv">
+    <h2>setfenv</h2>
+    <div class="code-box"><span class="token-table">&lt;Variant&gt;</span> <span class="token-function">setfenv</span>(<span class="token-type">Variant</span> <span class="token-global">object</span>, <span class="token-type">table</span> <span class="token-global">env</span>)</div>
+    <p>Sets the environment of the specified function or object to the provided table. This allows for changing the scope in which the function operates, enabling custom variable access and management.</p>
+  </div>
+  <div class="section" id="getscriptenvs">
+    <h2>getscriptenvs</h2>
+    <div class="code-box"><span class="token-table">&lt;table&gt;</span> <span class="token-function">getscriptenvs</span>(<span class="token-delimiter">&lt;none&gt;</span>)</div>
+    <p>Returns a table containing all scripts and their corresponding global environments. The keys are the scripts, and the values are their respective environments, enabling easy access to multiple script states and facilitating script management.</p>
+  </div>
+</div>
 </body>
 </html>
